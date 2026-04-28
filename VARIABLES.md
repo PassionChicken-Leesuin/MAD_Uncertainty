@@ -24,7 +24,7 @@ If the code disagrees with this document, **fix the code, not the doc**.
 | $BC(X)$ | Backward citations of $X$ — set of patents $X$ cites |
 | $FC_k(X)$ | Forward citations of $X$ within $k$ years — patents $z$ that cite $X$ with $t_z \in (t_X,\ t_X + k\!\cdot\!\text{yr}]$ |
 | $\mathcal{K}$ | Keyword universe — bulk patents matching the project's keyword definition (no date or IPC filter) |
-| $P_a(t)$ | Portfolio of assignee $a$ truncated at time $t$: $\{p : a \in A(p),\ t_p \leq t,\ p \neq X\}$ |
+| $P_a(t)$ | Portfolio of assignee $a$ truncated at time $t$: $\lbrace p : a \in A(p),\ t_p \leq t,\ p \neq X \rbrace$ |
 
 For the ICE project specifically:
 
@@ -88,11 +88,11 @@ helpers:
 Herfindahl over the IPC subclass of each backward-cited patent
 (Trajtenberg / Jaffe formulation: one primary class per cited patent).
 
-Let $S(X) = \{c \in BC(X) : \sigma(c) \neq \emptyset\}$ and $n = |S(X)|$.
+Let $S(X) = \lbrace c \in BC(X) : \sigma(c) \neq \emptyset \rbrace$ and $n = |S(X)|$.
 For each subclass $j$:
 
 $$
-B_j = \frac{|\{c \in S(X) : \sigma(c) = j\}|}{n}
+B_j = \frac{|\lbrace c \in S(X) : \sigma(c) = j \rbrace|}{n}
 $$
 
 $$
@@ -105,11 +105,11 @@ By construction $\sum_j B_j = 1$, so $\mathrm{CTO} \in [0,\ 1 - 1/n]$.
 #### 2. STO — Main-group-level Technological Originality
 
 Same as CTO at IPC main_group level. Let
-$T(X) = \{c \in BC(X) : \mu(c) \neq \emptyset\}$ and $m = |T(X)|$.
+$T(X) = \lbrace c \in BC(X) : \mu(c) \neq \emptyset \rbrace$ and $m = |T(X)|$.
 For each main_group $j$:
 
 $$
-B_j = \frac{|\{c \in T(X) : \mu(c) = j\}|}{m}, \qquad
+B_j = \frac{|\lbrace c \in T(X) : \mu(c) = j \rbrace|}{m}, \qquad
 \boxed{\ \mathrm{STO}(X) = 1 - \sum_j B_j^2\ }
 $$
 
@@ -128,7 +128,7 @@ Count of rows in `g_us_patent_citation` where `patent_id == X`.
 #### 4. SK — Scientific Knowledge
 
 $$
-\boxed{\ \mathrm{SK}(X) = |\{r \in \mathcal{R} : r.\mathrm{patent\,id} = X\}|\ }
+\boxed{\ \mathrm{SK}(X) = |\lbrace r \in \mathcal{R} : r.\mathrm{patent\,id} = X \rbrace|\ }
 $$
 
 where $\mathcal{R}$ is the table `g_other_reference.tsv` (NPL refs).
@@ -138,10 +138,10 @@ Proxy for science linkage.
 
 #### 5. TCT — Technology Cycle Time
 
-Let $D(X) = \{c \in BC(X) : t_c \text{ is known}\}$.
+Let $D(X) = \lbrace c \in BC(X) : t_c \text{ is known} \rbrace$.
 
 $$
-\boxed{\ \mathrm{TCT}(X) = \mathrm{median}\!\left\{ (t_X - t_c) : c \in D(X) \right\}\ \text{(in days)}\ }
+\boxed{\ \mathrm{TCT}(X) = \mathrm{median}\!\left\lbrace  (t_X - t_c) : c \in D(X) \right \rbrace\ \text{(in days)}\ }
 $$
 
 NaN if $D(X) = \emptyset$.
@@ -161,7 +161,7 @@ indicators plus an `MF_other` fallback (so 11 columns in feature space).
 #### 7. TS — Technological Scope
 
 $$
-\boxed{\ \mathrm{TS}(X) = |\{\mathrm{main\ group}(\rho) : \rho \in \mathrm{IPC}(X)\}|\ }
+\boxed{\ \mathrm{TS}(X) = |\lbrace \mathrm{main\ group}(\rho) : \rho \in \mathrm{IPC}(X) \rbrace|\ }
 $$
 
 Number of distinct main_groups across all IPC rows of $X$.
@@ -180,7 +180,7 @@ All eight apply a **time cutoff at $t_X$** to the assignee portfolio
 to prevent leakage. Define:
 
 $$
-P_a(t_X) = \{p : a \in A(p),\ t_p \leq t_X,\ p \neq X\}
+P_a(t_X) = \lbrace p : a \in A(p),\ t_p \leq t_X,\ p \neq X \rbrace
 $$
 
 $$
@@ -229,7 +229,7 @@ For $p \in P(X)$, define the **bounded forward count** with
 citing-side cutoff $\tau$:
 
 $$
-F_{\le}(p,\ \tau) = |\{z : (z,\ p) \in \mathrm{Citation},\ t_z \leq \tau\}|
+F_{\le}(p,\ \tau) = |\lbrace z : (z,\ p) \in \mathrm{Citation},\ t_z \leq \tau \rbrace|
 $$
 
 Then:
@@ -260,7 +260,7 @@ $$
 - $\mathrm{TTS} = \mathrm{CTS} + \mathrm{PTS}$
 - $\mathrm{CKH} \leq \mathrm{TKH}$, $\mathrm{CTS} \leq \mathrm{TTS}$
 - $\mathrm{CTO},\ \mathrm{STO} \in [0, 1]$
-- $\mathrm{TS},\ \mathrm{NC} \geq 1$, $\mathrm{COL} \in \{0, 1\}$, $\mathrm{INV} \geq 0$
+- $\mathrm{TS},\ \mathrm{NC} \geq 1$, $\mathrm{COL} \in \lbrace 0, 1 \rbrace$, $\mathrm{INV} \geq 0$
 
 ### Missing-data convention
 
@@ -283,26 +283,26 @@ BusinessModel) with 4-case moderator termination.
 |---|---|
 | $\Pi$ | Persona set, $|\Pi| = 5$ |
 | $a, b$ | A persona (element of $\Pi$) |
-| $R$ | Total number of rounds played, $R \in \{2, 3, 4, 5, 6\}$ (round 0 + 1..5) |
+| $R$ | Total number of rounds played, $R \in \lbrace 2, 3, 4, 5, 6 \rbrace$ (round 0 + 1..5) |
 | $r$ | A round index, $r \in [0, R)$ |
 | $r_0,\ r_f$ | First (initial) round, final round |
-| $\pi_a(r) \in \{0, 1\}$ | Persona $a$'s prediction in round $r$ (1 = Promising) |
+| $\pi_a(r) \in \lbrace 0, 1 \rbrace$ | Persona $a$'s prediction in round $r$ (1 = Promising) |
 | $c_a(r) \in [0, 1]$ | Persona $a$'s `confidence_for` in round $r$ |
-| $\alpha_{a \to b}(r) \in \{\mathrm{Sup}, \mathrm{Att}\}$ | $a$'s action targeting $b$ in round $r$ |
-| $\phi_a(r) \in \{0, 1\}$ | Validator's binary fact-based judgment of $a$'s reason in round $r$ |
+| $\alpha_{a \to b}(r) \in \lbrace \mathrm{Sup}, \mathrm{Att} \rbrace$ | $a$'s action targeting $b$ in round $r$ |
+| $\phi_a(r) \in \lbrace 0, 1 \rbrace$ | Validator's binary fact-based judgment of $a$'s reason in round $r$ |
 | $D = R - 1$ | Debate-round count (rounds 1..$R-1$, excluding round 0) |
 | $H(p)$ | Binary entropy: $H(p) = -p\log_2 p - (1-p)\log_2(1-p)$, with $H(0) = H(1) = 0$ |
 
 Helper sets:
 
 $$
-\mathcal{A}_+ = \{(a,r) : \pi_a(r) = 1\},\qquad
-\mathcal{A}_- = \{(a,r) : \pi_a(r) = 0\}
+\mathcal{A}_+ = \lbrace (a,r) : \pi_a(r) = 1 \rbrace,\qquad
+\mathcal{A}_- = \lbrace (a,r) : \pi_a(r) = 0 \rbrace
 $$
 
 $$
-\mathrm{gap}(r) = \left|\,\mathrm{mean}\{c_a(r) : \pi_a(r) = 1\}
-                   - \mathrm{mean}\{c_a(r) : \pi_a(r) = 0\}\,\right|
+\mathrm{gap}(r) = \left|\,\mathrm{mean}\lbrace c_a(r) : \pi_a(r) = 1 \rbrace
+                   - \mathrm{mean}\lbrace c_a(r) : \pi_a(r) = 0 \rbrace\,\right|
 $$
 
 ### Group 1: Confidence (7)
@@ -325,7 +325,7 @@ $$
 #### 3. var_conf_pro
 
 $$
-\boxed{\ \mathrm{Var}\!\left(\{c_a(r) : (a,r) \in \mathcal{A}_+\}\right)\ \text{with ddof}=0\ }
+\boxed{\ \mathrm{Var}\!\left(\lbrace c_a(r) : (a,r) \in \mathcal{A}_+ \rbrace\right)\ \text{with ddof}=0\ }
 $$
 
 Returns 0 if $|\mathcal{A}_+| \leq 1$.
@@ -333,7 +333,7 @@ Returns 0 if $|\mathcal{A}_+| \leq 1$.
 #### 4. var_conf_anti
 
 $$
-\boxed{\ \mathrm{Var}\!\left(\{c_a(r) : (a,r) \in \mathcal{A}_-\}\right)\ \text{with ddof}=0\ }
+\boxed{\ \mathrm{Var}\!\left(\lbrace c_a(r) : (a,r) \in \mathcal{A}_- \rbrace\right)\ \text{with ddof}=0\ }
 $$
 
 #### 5. conf_gap_change
@@ -373,10 +373,10 @@ $a$ issued an action targeting $b$ in round $r$:
 
 $$
 \begin{aligned}
-\mathrm{cs} &= |\{(a,b,r) : a \neq b,\ \alpha_{a \to b}(r) = \mathrm{Sup}\}|\\
-\mathrm{ca} &= |\{(a,b,r) : a \neq b,\ \alpha_{a \to b}(r) = \mathrm{Att}\}|\\
-\mathrm{ss} &= |\{(a,b,r) : a = b,\ \alpha_{a \to b}(r) = \mathrm{Sup}\}|\\
-\mathrm{sa} &= |\{(a,b,r) : a = b,\ \alpha_{a \to b}(r) = \mathrm{Att}\}|
+\mathrm{cs} &= |\lbrace (a,b,r) : a \neq b,\ \alpha_{a \to b}(r) = \mathrm{Sup} \rbrace|\\
+\mathrm{ca} &= |\lbrace (a,b,r) : a \neq b,\ \alpha_{a \to b}(r) = \mathrm{Att} \rbrace|\\
+\mathrm{ss} &= |\lbrace (a,b,r) : a = b,\ \alpha_{a \to b}(r) = \mathrm{Sup} \rbrace|\\
+\mathrm{sa} &= |\lbrace (a,b,r) : a = b,\ \alpha_{a \to b}(r) = \mathrm{Att} \rbrace|
 \end{aligned}
 $$
 
@@ -384,8 +384,8 @@ Receiving counts:
 
 $$
 \begin{aligned}
-\mathrm{rp} &= |\{(a,b,r) : \alpha_{a \to b}(r) = \mathrm{Sup} \land \pi_b(r-1) = 1\}|\\
-\mathrm{rn} &= |\{(a,b,r) : \alpha_{a \to b}(r) = \mathrm{Sup} \land \pi_b(r-1) = 0\}|
+\mathrm{rp} &= |\lbrace (a,b,r) : \alpha_{a \to b}(r) = \mathrm{Sup} \land \pi_b(r-1) = 1 \rbrace|\\
+\mathrm{rn} &= |\lbrace (a,b,r) : \alpha_{a \to b}(r) = \mathrm{Sup} \land \pi_b(r-1) = 0 \rbrace|
 \end{aligned}
 $$
 
@@ -426,7 +426,7 @@ Positive value = pro side received more support across the debate.
 ### Group 3: Validator (2)
 
 For each round $r$ and persona $a$, the validator emits
-$\phi_a(r) \in \{0, 1\}$. Aggregate:
+$\phi_a(r) \in \lbrace 0, 1 \rbrace$. Aggregate:
 
 $$
 \Phi_+ = \sum_{r \in [0, R)} \sum_{a \,:\, \pi_a(r) = 1} \phi_a(r),
@@ -452,7 +452,7 @@ $$
 
 #### 15. final_prediction
 
-The moderator's final decision after termination, $\in \{0, 1\}$:
+The moderator's final decision after termination, $\in \lbrace 0, 1 \rbrace$:
 majority vote (5:0 or 4:1) when consensus is reached, or
 forced-majority (3:2) at round 5.
 
@@ -462,7 +462,7 @@ $$
 
 #### 16-20. final_pred_{technology, application, user, ecosystem, businessmodel}
 
-Each persona's prediction in the final round, $\in \{0, 1\}$:
+Each persona's prediction in the final round, $\in \lbrace 0, 1 \rbrace$:
 
 $$
 \boxed{\ \pi_a(r_f) \quad \forall a \in \Pi\ }
@@ -475,7 +475,7 @@ $$
 For each round $r$, define the pro-supporter ratio:
 
 $$
-\rho(r) = \frac{|\{a \in \Pi : \pi_a(r) = 1\}|}{|\Pi|}
+\rho(r) = \frac{|\lbrace a \in \Pi : \pi_a(r) = 1 \rbrace|}{|\Pi|}
 $$
 
 If $D = 0$: 0. Else:
@@ -494,7 +494,7 @@ Termination reason $\tau$ takes one of four values:
 #### 22. total_rounds
 
 $$
-\boxed{\ \mathrm{state.termination\ round} \in \{1, 2, 3, 4, 5\}\ }
+\boxed{\ \mathrm{state.termination\ round} \in \lbrace 1, 2, 3, 4, 5 \rbrace\ }
 $$
 
 The round at which termination occurred.
@@ -521,7 +521,7 @@ Indicator of any termination after round 1
 
 #### 25. semantic_coherence
 
-Embed the 5 reason strings $\{\mathrm{reason}_a(r_f) : a \in \Pi\}$
+Embed the 5 reason strings $\lbrace \mathrm{reason}_a(r_f) : a \in \Pi \rbrace$
 using OpenAI `text-embedding-3-small` to obtain
 $e_1, \ldots, e_5 \in \mathbb{R}^d$. Compute pairwise cosine
 similarity for all $\binom{5}{2} = 10$ pairs and average:
