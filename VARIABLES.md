@@ -287,7 +287,7 @@ BusinessModel) with 4-case moderator termination.
 | $r$ | A round index, $r \in [0, R)$ |
 | $r_0,\ r_f$ | First (initial) round, final round |
 | $\pi_a(r) \in \lbrace 0, 1 \rbrace$ | Persona $a$'s prediction in round $r$ (1 = Promising) |
-| $c_a(r) \in [0, 1]$ | Persona $a$'s `confidence_for` in round $r$ |
+| $c_a(r) \in [0.50, 1.00]$ | Persona $a$'s `confidence_for` in round $r$ — confidence in **own** prediction (lower-bounded at 0.5 by spec); `confidence_against` $= 1 - c_a(r)$ |
 | $\alpha_{a \to b}(r) \in \lbrace \mathrm{Sup}, \mathrm{Att} \rbrace$ | $a$'s action targeting $b$ in round $r$ |
 | $\phi_a(r) \in \lbrace 0, 1 \rbrace$ | Validator's binary fact-based judgment of $a$'s reason in round $r$ |
 | $D = R - 1$ | Debate-round count (rounds 1..$R-1$, excluding round 0) |
