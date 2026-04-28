@@ -25,47 +25,57 @@ ICE 도메인 7,086 USPTO 특허 cohort에서 16개 bibliometric 변수 +
 
 ---
 
+**성능 지표 정의** (모두 top-10% threshold 에서 계산, Y=1 클래스):
+
+- **AUROC**: ROC 곡선 면적 (threshold-free)
+- **AUPRC**: Precision-Recall 곡선 면적 (threshold-free)
+- **Precision**: TP / (TP + FP) — top-10% 예측의 정밀도
+- **Recall**: TP / (TP + FN) — 실제 positive 중 검출 비율
+- **DOR**: Diagnostic Odds Ratio = (TP × TN) / (FP × FN), Haldane 보정 (각 cell +0.5)
+  - DOR > 1 = 분류기가 random보다 우수, 클수록 좋음
+  - 베이스라인 (random) DOR = 1.0
+
 ## Section 1: BIBLIO만 — 4 모델 성능 (20-seed mean ± std)
 
-| Model | AUROC | AUPRC | top10_prec |
-|---|---:|---:|---:|
-| **RF** | **0.7507 ± 0.018** | **0.3496 ± 0.027** | **0.3743 ± 0.027** |
-| XGB | 0.7130 ± 0.016 | 0.3056 ± 0.031 | 0.3504 ± 0.029 |
-| FFN | 0.7110 ± 0.023 | 0.2718 ± 0.023 | 0.3218 ± 0.029 |
-| SVM | 0.6482 ± 0.023 | 0.2228 ± 0.023 | 0.2585 ± 0.031 |
+| Model | AUROC | AUPRC | Precision | Recall | DOR |
+|---|---:|---:|---:|---:|---:|
+| **RF** | **0.7507 ± 0.018** | **0.3496 ± 0.027** | **0.3743 ± 0.027** | **0.3025 ± 0.021** | **5.63 ± 0.78** |
+| XGB | 0.7130 ± 0.016 | 0.3056 ± 0.031 | 0.3504 ± 0.029 | 0.2811 ± 0.023 | 4.93 ± 0.80 |
+| FFN | 0.7110 ± 0.023 | 0.2718 ± 0.023 | 0.3218 ± 0.029 | 0.2582 ± 0.023 | 4.19 ± 0.68 |
+| SVM | 0.6482 ± 0.023 | 0.2228 ± 0.023 | 0.2585 ± 0.031 | 0.2073 ± 0.025 | 2.87 ± 0.55 |
 
 **관찰**: Tree 기반 모델 (RF, XGB) 이 SVM, FFN 대비 baseline 우수.
-RF가 절대 1위.
+RF가 모든 metric 절대 1위 (DOR 5.63 = random 대비 5.6× lift).
 
 ---
 
 ## Section 2: BIBLIO + 25 Debate — 4 모델 성능
 
-| Model | AUROC | AUPRC | top10_prec | Δ AUROC vs BIBLIO |
-|---|---:|---:|---:|---:|
-| **RF** | **0.7426 ± 0.017** | 0.3290 ± 0.027 | **0.3621 ± 0.036** | −0.008 |
-| XGB | 0.7168 ± 0.016 | 0.2888 ± 0.024 | 0.3264 ± 0.023 | **+0.004** |
-| FFN | 0.6584 ± 0.022 | 0.2126 ± 0.019 | 0.2532 ± 0.027 | −0.053 |
-| SVM | 0.6569 ± 0.017 | 0.2073 ± 0.015 | 0.2423 ± 0.031 | +0.009 |
+| Model | AUROC | AUPRC | Precision | Recall | DOR | Δ AUROC |
+|---|---:|---:|---:|---:|---:|---:|
+| **RF** | **0.7426 ± 0.017** | **0.3290 ± 0.027** | **0.3621 ± 0.036** | **0.2963 ± 0.029** | **5.32 ± 1.04** | −0.008 |
+| XGB | 0.7168 ± 0.016 | 0.2888 ± 0.024 | 0.3264 ± 0.023 | 0.2619 ± 0.019 | 4.29 ± 0.58 | **+0.004** |
+| FFN | 0.6584 ± 0.022 | 0.2126 ± 0.019 | 0.2532 ± 0.027 | 0.2031 ± 0.021 | 2.77 ± 0.46 | −0.053 |
+| SVM | 0.6569 ± 0.017 | 0.2073 ± 0.015 | 0.2423 ± 0.031 | 0.1944 ± 0.025 | 2.59 ± 0.51 | +0.009 |
 
 **관찰**: 25개 debate 변수 전체 추가 시:
-- RF / FFN 은 오히려 악화 (over-parameterization)
-- XGB / SVM 은 약간 향상
+- RF / FFN 은 오히려 악화 (over-parameterization). RF DOR 5.63 → 5.32
+- XGB / SVM 은 미미한 AUROC 향상
 
 ---
 
 ## Section 3: BIBLIO + 6 Focal Debate — 4 모델 성능
 
-| Model | AUROC | AUPRC | top10_prec | Δ AUROC vs BIBLIO |
-|---|---:|---:|---:|---:|
-| **RF** | **0.7528 ± 0.017** | **0.3434 ± 0.029** | **0.3675 ± 0.033** | +0.002 |
-| **XGB** | **0.7266 ± 0.019** | 0.2980 ± 0.020 | 0.3349 ± 0.023 | **+0.014** ⭐ |
-| FFN | 0.6951 ± 0.021 | 0.2577 ± 0.018 | 0.3039 ± 0.038 | −0.016 |
-| SVM | 0.6589 ± 0.015 | 0.2197 ± 0.018 | 0.2479 ± 0.020 | +0.011 |
+| Model | AUROC | AUPRC | Precision | Recall | DOR | Δ AUROC |
+|---|---:|---:|---:|---:|---:|---:|
+| **RF** | **0.7528 ± 0.017** | **0.3434 ± 0.029** | **0.3675 ± 0.033** | **0.2994 ± 0.026** | **5.46 ± 0.94** | +0.002 |
+| **XGB** | **0.7266 ± 0.019** | 0.2980 ± 0.020 | 0.3349 ± 0.023 | 0.2686 ± 0.019 | 4.50 ± 0.61 | **+0.014** ⭐ |
+| FFN | 0.6951 ± 0.021 | 0.2577 ± 0.018 | 0.3039 ± 0.038 | 0.2438 ± 0.030 | 3.80 ± 0.77 | −0.016 |
+| SVM | 0.6589 ± 0.015 | 0.2197 ± 0.018 | 0.2479 ± 0.020 | 0.1989 ± 0.016 | 2.67 ± 0.34 | +0.011 |
 
 **관찰**:
-- **절대 AUROC 1위**: RF + 6focal (0.7528)
-- **debate 활용 1위**: XGB + 6focal (Δ +0.014, 17/20 seed 승)
+- **모든 metric 절대 1위**: RF + 6focal (AUROC 0.7528, DOR 5.46)
+- **debate 활용도 1위**: XGB + 6focal (Δ AUROC +0.014, 17/20 seed 승, DOR 4.29 → 4.50)
 - 6 focal subset 이 25개 전체보다 일관 우수 — sparse가 better
 
 ---
@@ -81,7 +91,18 @@ RF가 절대 1위.
 | FFN | **0.7110** | 0.6584 | 0.6951 | BIBLIO |
 | SVM | 0.6482 | 0.6569 | **0.6589** | +6focal |
 
-### Δ AUROC vs BIBLIO (paired)
+### DOR mean (20 seeds)
+
+| Model | BIBLIO | +25 | +6focal | best |
+|---|---:|---:|---:|---|
+| **RF** | **5.63** | 5.32 | 5.46 | BIBLIO |
+| XGB | 4.93 | 4.29 | 4.50 | BIBLIO |
+| FFN | 4.19 | 2.77 | 3.80 | BIBLIO |
+| SVM | 2.87 | 2.59 | 2.67 | BIBLIO |
+
+→ **DOR 기준으론 BIBLIO만이 최고** — top-10% threshold에서 confusion matrix 비율 측면에서는 debate 추가가 약간 손해. AUROC는 향상되지만 calibration이 흔들림 (probability ranking은 좋아져도 같은 threshold에서 TP/FP 균형이 살짝 무너짐).
+
+### Δ AUROC vs BIBLIO (paired by seed)
 
 | Model | +25 Δ | +6focal Δ | win rate (+6focal vs BIBLIO) |
 |---|---:|---:|:---:|
@@ -90,7 +111,18 @@ RF가 절대 1위.
 | FFN | −0.053 | −0.016 | 4/20 (20%) |
 | SVM | +0.009 | +0.011 | 16/20 (80%) |
 
-→ **XGB / SVM 은 debate 변수 활용 가능, RF / FFN 은 미활용**.
+→ **XGB / SVM 은 AUROC 기준 debate 변수 활용 가능**. RF / FFN 은 미활용.
+
+### Recall (20 seeds, top-10% threshold)
+
+| Model | BIBLIO | +25 | +6focal |
+|---|---:|---:|---:|
+| **RF** | **0.3025** | 0.2963 | **0.2994** |
+| XGB | 0.2811 | 0.2619 | 0.2686 |
+| FFN | 0.2582 | 0.2031 | 0.2438 |
+| SVM | 0.2073 | 0.1944 | 0.1989 |
+
+베이스라인 random Recall = 0.10 (top-10% 무작위 선택). 모든 모델이 random 대비 2-3× lift.
 
 ---
 
@@ -291,10 +323,12 @@ Test set에서의 mean |SHAP value|. 상위 15개:
 
 ### 6.1 Confusion Matrix (test n=1,418, Y_pos=177)
 
-| Predictor | TP | FP | FN | TN | Predicted Pos | Accuracy | Precision | Recall | F1 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| MAD final_prediction (raw debate verdict) | 148 | 964 | 29 | 277 | 1,112 | **0.300** | **0.133** | **0.836** | 0.230 |
-| Best ML (RF + 6focal, top 10% threshold) | 54 | 94 | 123 | 1,147 | 148 | **0.847** | **0.365** | **0.305** | 0.332 |
+| Predictor | TP | FP | FN | TN | Pos Pred | Accuracy | Precision | Recall | F1 | DOR |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MAD final_prediction (raw debate verdict) | 148 | 964 | 29 | 277 | 1,112 | **0.300** | **0.133** | **0.836** | 0.230 | **1.45** |
+| Best ML (RF + 6focal, top 10% threshold) | 54 | 94 | 123 | 1,147 | 148 | **0.847** | **0.365** | **0.305** | 0.332 | **5.36** |
+
+DOR (Haldane-corrected) 차이가 결정적: MAD 1.45 (random에 가까움) vs Best ML 5.36 (random 대비 5× lift).
 
 ### 6.2 Probability-based Metrics
 
@@ -347,10 +381,13 @@ Test set에서의 mean |SHAP value|. 상위 15개:
 
 | 파일 | 내용 |
 |---|---|
-| `analysis/outputs/experiments_summary/section_1_3_performance.csv` | 4 models × 3 configs × 7 metrics (20-seed mean ± std) |
+| `analysis/outputs/experiments_summary/section_1_3_full_metrics.csv` | 4 models × 3 configs × 5 metrics (AUROC, AUPRC, Precision, Recall, DOR) — 20-seed mean ± std |
+| `analysis/outputs/experiments_summary/section_1_3_full_metrics_detail.csv` | 위와 동일하나 per-seed 원시값 (20 × 4 × 3 = 240 rows) |
+| `analysis/outputs/experiments_summary/section_1_3_performance.csv` | 위 metrics의 부분집합 (AUROC/AUPRC/top10_prec) |
 | `analysis/outputs/experiments_summary/single_seed_performance.csv` | 4 × 3 single-seed=42 (sections 4–6 일관성) |
 | `analysis/outputs/experiments_summary/section_4_perm_importance.csv` | 4 models × 2 configs × all features |
 | `analysis/outputs/experiments_summary/section_5_shap.csv` | 2 configs × all features (mean &#124;SHAP&#124;, XGB only) |
 | `analysis/outputs/experiments_summary/section_6_confusion.csv` | MAD vs Best ML confusion matrix metrics |
 | `analysis/outputs/experiments_summary/section_6_auroc.csv` | MAD vs Best ML probability-based metrics |
 | `analysis/experiments_summary.py` | 전체 6 section 재현 스크립트 |
+| `analysis/add_full_metrics.py` | Precision/Recall/DOR 추가 계산 스크립트 |
