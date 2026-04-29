@@ -40,13 +40,9 @@ THRESHOLDS_PCT = [5, 10, 15, 20]
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parent
 DATA_CSV = PROJECT / "data" / "variables_full_partial.csv"
+IPC_LOOKUP = PROJECT / "data" / "ipc_lookup.parquet"
+QUADRANT_CSV = PROJECT / "data" / "per_field_quadrant_placement.csv"
 OUT_DIR = PROJECT / "outputs"
-
-ICE_ROOT = Path(r"C:\Users\User\OneDrive\문서\이수인\서울대학교\AI Agent\ICE_Domain")
-IPC_LOOKUP = ICE_ROOT / "data_collection" / "intermediate" / "ipc_lookup.parquet"
-
-AV_ROOT = Path(r"C:\Users\User\OneDrive\문서\이수인\서울대학교\AI Agent\Autonomous_Vehicle")
-QUADRANT_CSV = AV_ROOT / "scripts" / "per_field_quadrant_placement.csv"
 
 QUADRANT_KEY = {
     "01": "Q01_ICE", "03": "Q03_HCCI", "07": "Q07_Hybrids",

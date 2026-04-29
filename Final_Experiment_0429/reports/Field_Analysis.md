@@ -348,15 +348,26 @@ Final_Experiment_0429/
 │   ├── experiments_per_field_sweep.py        ← 메인 sweep (7,680 fits)
 │   ├── experiments_per_field_covariates.py   ← 17 field-level covariate + Spearman ρ
 │   └── _show_per_field.py                    ← grid view 출력
-└── outputs/
-    ├── per_field_threshold_full.csv          (7,680 rows: per seed × T × cfg × model × field)
-    ├── per_field_threshold_summary.csv       (seed mean ± std)
-    ├── per_field_delta_auroc.csv             (192 rows: 8 field × 4 T × 6 model)
-    ├── per_field_delta_dor.csv               (192 rows)
-    ├── per_field_covariates.csv              (8 rows × 24 covariates)
-    ├── per_field_correlation.csv             (Spearman ρ table, long format)
-    └── per_field_sweep.log                   (실행 로그)
+├── data/
+│   ├── variables_full_partial.csv            (7,086 patent × 16 biblio + 25 debate + Y/forward5/fields)
+│   ├── ipc_lookup.parquet                    (patent_id × subclass_full × main_group_full, IPC 다양성 covariate 계산용)
+│   └── per_field_quadrant_placement.csv      (zX, zY, asg_HHI, top5_share — Concentration × Depth quadrant 좌표)
+├── outputs/
+│   ├── per_field_threshold_full.csv          (7,680 rows: per seed × T × cfg × model × field)
+│   ├── per_field_threshold_summary.csv       (seed mean ± std)
+│   ├── per_field_delta_auroc.csv             (192 rows: 8 field × 4 T × 6 model)
+│   ├── per_field_delta_dor.csv               (192 rows)
+│   ├── per_field_covariates.csv              (8 rows × 24 covariates)
+│   ├── per_field_correlation.csv             (Spearman ρ table, long format)
+│   └── per_field_sweep.log                   (실행 로그)
+└── reports/
+    └── Field_Analysis.md                     ← 본 문서
 ```
+
+**데이터 출처**:
+- `variables_full_partial.csv`는 `debate/runs/v2a_y_anchored/results/variables_full_partial.csv`의 사본 (기존 스냅샷에 포함).
+- `ipc_lookup.parquet`은 `data_collection/intermediate/ipc_lookup.parquet`의 사본 — Final_Experiment_0429 단독 재현을 위해 포함.
+- `per_field_quadrant_placement.csv`는 자매 프로젝트(Autonomous_Vehicle)의 `scripts/per_field_quadrant_placement.csv` 사본 — quadrant covariate(zX, zY) 재현을 위해 포함.
 
 ### 재현
 
