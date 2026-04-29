@@ -277,6 +277,34 @@ Source: `../Autonomous_Vehicle/debate/variables.py`. Adapted to a
 **5-persona panel** (Technology, Application, User, Ecosystem,
 BusinessModel) with 4-case moderator termination.
 
+> **Focal subset used in the final modeling experiments.**
+> Of the 25 debate variables, the **6 marked `(focal)` below** form the
+> `+6focal` configuration used in `Result_Threshold.md` and
+> `Result_FI_SHAP.md`. The remaining 19 are extracted and stored, but not
+> fed to the threshold/importance models.
+
+### Focal 6 — final-use variables
+
+| # | Variable | Group | One-line description |
+|---|---|---|---|
+| 1 | **`var_conf_pro`** | Confidence | Variance of pro-side confidence values across (persona, round). |
+| 2 | **`H_final`** | Confidence | Average per-persona binary entropy in the final round. |
+| 3 | **`delta_H`** | Confidence | Reduction in mean entropy from initial to final round. |
+| 4 | **`conf_gap_change`** | Confidence | Pro/anti confidence-gap shrinkage from initial to final round. |
+| 5 | **`cross_domain_attack`** | Argument graph | Per-debate-round count of cross-persona attacks. |
+| 6 | **`semantic_coherence`** | Text | Mean pairwise cosine similarity of the 5 final-round reason embeddings. |
+
+Selection rationale and per-T·per-model importance breakdown:
+see `Result_FI_SHAP.md`. The shortlist mixes (a) two
+**uncertainty-resolution** signals (`H_final`, `delta_H`),
+(b) two **disagreement geometry** signals (`var_conf_pro`,
+`conf_gap_change`), and (c) one **adversarial-graph** signal
+(`cross_domain_attack`) plus (d) one **semantic-alignment** signal
+(`semantic_coherence`) — covering all four dimensions of debate
+dynamics surfaced by the LLM panel.
+
+The full 25-variable definitions follow.
+
 ### Debate-specific notation
 
 | Symbol | Meaning |
@@ -322,7 +350,7 @@ $$
 \boxed{\ \frac{1}{|\mathcal{A}_-|} \sum_{(a,r) \in \mathcal{A}_-} c_a(r)\ }
 $$
 
-#### 3. var_conf_pro
+#### 3. var_conf_pro **(focal)**
 
 $$
 \boxed{\ \mathrm{Var}\!\left(\lbrace c_a(r) : (a,r) \in \mathcal{A}_+ \rbrace\right)\ \text{with ddof}=0\ }
@@ -336,7 +364,7 @@ $$
 \boxed{\ \mathrm{Var}\!\left(\lbrace c_a(r) : (a,r) \in \mathcal{A}_- \rbrace\right)\ \text{with ddof}=0\ }
 $$
 
-#### 5. conf_gap_change
+#### 5. conf_gap_change **(focal)**
 
 $$
 \boxed{\ \mathrm{gap}(r_0) - \mathrm{gap}(r_f)\ }
@@ -345,7 +373,7 @@ $$
 How much the pro / anti confidence gap shrunk from the initial round to
 the final round. Positive = personas converged.
 
-#### 6. H_final
+#### 6. H_final **(focal)**
 
 $$
 \boxed{\ \frac{1}{|\Pi|} \sum_{a \in \Pi} H(c_a(r_f))\ }
@@ -353,7 +381,7 @@ $$
 
 Average per-persona binary entropy in the final round.
 
-#### 7. delta_H
+#### 7. delta_H **(focal)**
 
 Define round-level mean entropy
 $\bar{H}(r) = \frac{1}{|\Pi|}\sum_{a \in \Pi} H(c_a(r))$.
@@ -397,7 +425,7 @@ $$
 \boxed{\ \mathrm{cs} / D\ }
 $$
 
-#### 9. cross_domain_attack
+#### 9. cross_domain_attack **(focal)**
 
 $$
 \boxed{\ \mathrm{ca} / D\ }
@@ -519,7 +547,7 @@ Indicator of any termination after round 1
 
 ### Group 6: Text (1)
 
-#### 25. semantic_coherence
+#### 25. semantic_coherence **(focal)**
 
 Embed the 5 reason strings $\lbrace \mathrm{reason}_a(r_f) : a \in \Pi \rbrace$
 using OpenAI `text-embedding-3-small` to obtain
@@ -548,12 +576,21 @@ embedding space.
 | Debate moderator | 3 | total_rounds, term_unanimous, term_extended_debate |
 | Debate text | 1 | semantic_coherence |
 | **Total debate** | **25** | |
+| ↳ *Focal subset (used in `+6focal` modeling)* | **6** | var_conf_pro, H_final, delta_H, conf_gap_change, cross_domain_attack, semantic_coherence |
 | **Output** | 1 | $Y$ (top-decile of $\phi_5$) |
 | **Grand total per patent** | **42** | |
 
 In modeling, MF is one-hot-encoded as 11 binary columns (top-10 +
-"other"), so the **feature dimension** in the augmented (BIBLIO + 25
-debate) model is $15 + 11 + 25 = 51$.
+"other"). Feature-dimension counts by config:
+
+| Config | Features | Composition |
+|---|---|---|
+| `BIBLIO`   | 26 | 15 numeric + 11 MF one-hot |
+| `+6focal`  | 32 | 26 BIBLIO + 6 focal debate |
+| `+25` (full) | 51 | 26 BIBLIO + 25 debate |
+
+The `+6focal` config is the one used to produce `Result_Threshold.md`,
+`Result_FI_SHAP.md`, and the snapshot in `Final_Experiment_0429/`.
 
 ---
 
