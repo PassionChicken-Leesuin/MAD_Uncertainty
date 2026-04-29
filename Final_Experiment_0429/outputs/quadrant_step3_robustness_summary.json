@@ -1,0 +1,6 @@
+{
+  "step3_loo_min_pk_rho": -0.857,
+  "step3_loo_max_pk_rho": -0.964,
+  "step3_loo_pk_rho_excluding_14DI": -0.893,
+  "note": "PK_mean rho holds |rho|>=0.85 across all LOO subsets, including exclusion of 14-DI outlier"
+}
