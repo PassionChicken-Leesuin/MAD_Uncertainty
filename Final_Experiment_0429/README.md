@@ -1,8 +1,10 @@
 # Final_Experiment_0429
 
 > 2026-04-29 기준, ICE 도메인 multi-agent debate 변수의 효용을 평가한
-> **임계값(Threshold) 분석**과 **Feature Importance / SHAP 분석**의
-> 코드·데이터·결과를 한 폴더에 정리한 스냅샷.
+> 세 가지 실험의 코드·데이터·결과를 한 폴더에 정리한 스냅샷:
+> 1. **임계값(Threshold) Sweep 분석** (`Result_Threshold.md`)
+> 2. **Feature Importance / SHAP 분석** (`Result_FI_SHAP.md`)
+> 3. 🆕 **Debate 변수 최적 부분집합 탐색** (`Result_DebateBestSubset.md`)
 
 ---
 
@@ -12,25 +14,39 @@
 Final_Experiment_0429/
 ├── README.md                  ← 본 문서
 ├── data/
-│   └── variables_full_partial.csv
-│       (7,086 patent × bibliometric 16 + debate 25 + Y/forward5)
+│   ├── variables_full_partial.csv         (실험 1, 2 입력)
+│   └── variables_full.csv                 (실험 3 입력 — 동일 7,086 cohort)
 ├── code/
-│   ├── experiments_threshold_sweep.py
-│   ├── experiments_threshold_importance.py
+│   ├── experiments_threshold_sweep.py     (실험 1)
+│   ├── experiments_threshold_importance.py (실험 2)
+│   ├── exhaustive_6vars_20seed.py         (실험 3 메인)
+│   ├── narrowing_justification.py         (실험 3 — 25→6 narrowing 검증)
 │   ├── _show_threshold.py
 │   └── _show_importance.py
 ├── outputs/
-│   ├── threshold_sweep_full.csv          (per-seed-T-config-model 성능지표)
-│   ├── threshold_sweep_summary.csv       (시드 평균±std)
-│   ├── threshold_sweep_delta.csv         (Δ AUROC vs BIBLIO baseline)
-│   ├── threshold_sweep_dor_delta.csv     (Δ DOR vs BIBLIO baseline)
-│   ├── threshold_importance_perm_full.csv     (per-seed-T-model-feature)
-│   ├── threshold_importance_perm_summary.csv  (시드 평균±std)
-│   ├── threshold_importance_shap_full.csv     (XGB only, per-seed)
-│   └── threshold_importance_shap_summary.csv  (XGB only, 평균±std)
+│   ├── (실험 1)
+│   │   threshold_sweep_full.csv          (per-seed-T-config-model)
+│   │   threshold_sweep_summary.csv       (시드 평균±std)
+│   │   threshold_sweep_delta.csv         (Δ AUROC vs BIBLIO)
+│   │   threshold_sweep_dor_delta.csv     (Δ DOR vs BIBLIO)
+│   ├── (실험 2)
+│   │   threshold_importance_perm_full.csv     (per-seed-T-model-feature)
+│   │   threshold_importance_perm_summary.csv
+│   │   threshold_importance_shap_full.csv     (XGB only)
+│   │   threshold_importance_shap_summary.csv
+│   └── (실험 3)
+│       narrow6_evidence.csv               (25 → 6 narrowing 종합 ranking)
+│       exh6_metric_grid.csv               (7,680 fits × 4 k% raw)
+│       exh6_auroc_long.csv                (AUROC/AUPRC raw)
+│       exh6_subset_per_slot.csv           (subset × k% 집계, 120 obs/cell)
+│       exh6_subset_AUROC.csv              (subset × AUROC/AUPRC 집계)
+│       exh6_winners.csv                   (12 slot × top-5 ranking)
+│       exh6_consensus.csv                 (subset × top-1/3/5 등장 빈도)
+│       exh6_summary.md                    (자동 요약)
 └── reports/
-    ├── Result_Threshold.md       (T={5,10,15,20}% × 6모델 성능 비교)
-    └── Result_FI_SHAP.md         (변수 중요도 + SHAP 분석)
+    ├── Result_Threshold.md                (실험 1)
+    ├── Result_FI_SHAP.md                  (실험 2)
+    └── Result_DebateBestSubset.md         (🆕 실험 3)
 ```
 
 ---
@@ -60,6 +76,17 @@ Final_Experiment_0429/
 - **Permutation Importance**: sklearn, n_repeats=10, scoring=AUROC, test fold.
 - **SHAP**: XGB만, `shap.TreeExplainer`, test fold, 평균 절대 SHAP.
 - → **`Result_FI_SHAP.md`**
+
+### 2.4 실험 3 — Debate 변수 최적 부분집합 (`exhaustive_6vars_20seed.py`)
+- **6 후보 변수**: cross_domain_attack, conf_gap_change, var_conf_pro, H_final, delta_H, semantic_coherence
+  - 4-그룹 불확실성 분류체계(A 상호작용 / B 동학 / C 개별내적 / D 합의)에서 각 그룹 대표 1~2개로 narrowing.
+  - Narrowing 정당화 (`narrowing_justification.py`): 결합 시너지 + 이론 기반.
+- **탐색 공간**: 2^6 − 1 = 63 비공집합 + BIBLIO = **64 configs**.
+- **평가**: T=10% (Y rate 12.49%) 고정. 6 모델 × 20 시드 × 64 configs = **7,680 model fits** (~2시간).
+- **Metric grid** (12 slot): Precision / Recall / DOR (Haldane) @ k% with k ∈ {5, 10, 15, 20}.
+  - 추가로 AUROC, AUPRC (k-independent).
+- **Robust winner 식별**: 12 slot 각각의 top-5 ranking + consensus (top-1/3/5 등장 빈도).
+- → **`Result_DebateBestSubset.md`**
 
 ### 2.4 변수 정의
 - **BIBLIO 26** = 15 numeric (CTO, STO, PK, SK, TCT, TS, NC, COL, INV, TKH, CKH, PKH, TTS, CTS, PTS) + MF top-10 one-hot + MF_other.
@@ -94,6 +121,16 @@ Final_Experiment_0429/
 - T=5%에서 debate 점유율 peak: GBT 16%, XGB 14%, LogReg 18%, FFN 17%.
 - 자세한 표·수치는 `reports/Result_FI_SHAP.md`.
 
+### 3.3 Debate 변수 최적 부분집합 — sparse가 robust
+- **🏆 최적 부분집합: `cross_domain_attack + semantic_coherence`** (size 2)
+  - 12 metric slot 중 **6 slot에서 #1**, **12 slot 모두 top-5** (100%).
+  - k=15-20% 추천 영역에서 일관 winner: Precision +0.5~0.7%p, Recall +0.7~0.8%p, DOR +0.15~0.18.
+- **size 2가 size 3+ 보다 일관되게 우수** — over-fitting 회피.
+- k=5%에서는 BIBLIO_ONLY가 1위 — top-shortlist 영역에선 debate 추가 효과 거의 없음.
+- 5-seed → 20-seed 변경 시 효과 크기 ~6배 축소 (Δ +0.012 → +0.002 수준) → 5-seed 결과는 split-luck 부풀림. 20-seed가 honest.
+- AUROC 기준 winner는 다름 (`CA + H_final + delta_H + SC`, size 4) — task에 맞는 metric 선택 중요.
+- 자세한 표·수치는 `reports/Result_DebateBestSubset.md`.
+
 ---
 
 ## 4. 재현 방법
@@ -110,8 +147,10 @@ pandas, numpy, scikit-learn, xgboost, shap
 
 ```bash
 cd /c/Users/User/.../ICE_Domain
-python analysis/experiments_threshold_sweep.py        # ~3-4시간
-python analysis/experiments_threshold_importance.py   # ~30분
+python analysis/experiments_threshold_sweep.py        # 실험 1: ~3-4시간
+python analysis/experiments_threshold_importance.py   # 실험 2: ~30분
+python analysis/narrowing_justification.py            # 실험 3a: ~1분
+python analysis/exhaustive_6vars_20seed.py            # 실험 3b: ~2시간 (7,680 fits)
 python analysis/_show_threshold.py                    # threshold sweep summary
 python analysis/_show_importance.py                   # importance summary
 ```
