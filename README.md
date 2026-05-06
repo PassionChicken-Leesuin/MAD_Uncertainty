@@ -1,3 +1,5 @@
+# 2026 대한산업공학회 춘계학술대회 발표 연구입니다.
+
 # MAD_Uncertainty — Multi-Agent Debate 불확실성 변수의 유망기술 예측 효용 분석
 
 > ICE(Internal Combustion Engine) 도메인 USPTO 특허 7,086건을 대상으로,
